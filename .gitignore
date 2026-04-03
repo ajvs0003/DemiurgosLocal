@@ -24,6 +24,8 @@ yarn-error.log*
 pnpm-debug.log*
 bun-debug.log*
 logs/
+*.db-wal
+*.db-shm
 
 # Package manager / lockfiles (ignore only if this repo does not commit them)
 package-lock.json
