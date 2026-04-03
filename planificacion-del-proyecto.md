@@ -1,6 +1,6 @@
 # Planificacion del Proyecto - Nae (DnD 5e 2024)
 
-> Documento maestro de planificacion. Ultima actualizacion: 2026-04-03
+> Documento maestro de planificacion. Ultima actualizacion: 2026-04-03 (iteracion FASE 2: base API)
 
 ## 1. Vision general
 
@@ -215,28 +215,67 @@ Esto permite:
 | rules.db | 817 | 1,576 KB |
 | **Total** | **1,982 registros** | **~3.9 MB** |
 
-### FASE 2 — Base de la API (ACTUAL)
+### FASE 2 — Base de la API (EN CURSO, avance funcional importante)
 
 > Objetivo: API funcional que consulta SQLite y sirve datos al frontend.
 
-- [ ] Inicializar monorepo (`package.json` raiz, `pnpm-workspace.yaml`, `tsconfig.base.json`)
-- [ ] Crear paquete `packages/api/` con Express + TS + better-sqlite3
-- [ ] Endpoints publicos de lectura (cada uno consulta su .db):
+- [x] Inicializar monorepo (`package.json` raiz, `pnpm-workspace.yaml`, `tsconfig.base.json`)
+- [x] Crear paquete `packages/api/` con Express + TS + better-sqlite3
+- [x] Endpoints publicos de lectura base (cada uno consulta su `.db` real):
   - `GET /species` / `GET /species/:id` — acepta `?origin=dnd|nae`
   - `GET /classes` / `GET /classes/:id`
-  - `GET /spells` / `GET /spells/:id` — acepta `?level=X&school=X`
+  - `GET /spells` / `GET /spells/:id` — acepta filtros genericos y funciona con `?level=X&school=X`
   - `GET /equipment` / `GET /equipment/:id`
   - `GET /feats` / `GET /feats/:id`
   - `GET /backgrounds` / `GET /backgrounds/:id`
   - `GET /monsters` / `GET /monsters/:id`
   - `GET /rules` / `GET /rules/:id`
-  - `GET /search?q=...` — busqueda FTS5 cruzada en todas las BDs
-- [ ] Servir assets estaticos (`express.static` sobre `assets/`)
-- [ ] Endpoints de administracion (masters):
-  - `POST /admin/import-md` (subir .md -> parsear frontmatter -> INSERT en SQLite con origin="nae")
-  - `POST /admin/upload-image` (subir imagen a assets/)
-  - `PUT /admin/:collection/:id` (editar entrada Nae)
-  - `DELETE /admin/:collection/:id` (eliminar entrada Nae)
+  - `GET /search?q=...` — busqueda FTS5 cruzada en todas las BDs, con soporte opcional `?origin=` y `?limit=`
+- [x] Servir assets estaticos (`express.static` sobre `packages/api/assets/`)
+- [~] Endpoints de administracion (masters):
+  - [x] `POST /admin/import-md` (subir `.md` o JSON con markdown -> parsear frontmatter -> INSERT/UPDATE en SQLite con `origin="nae"`)
+  - [x] `POST /admin/upload-image` (subir imagen a `assets/images/`)
+  - [x] `PUT /admin/:collection/:id` (editar entrada Nae)
+  - [x] `DELETE /admin/:collection/:id` (eliminar entrada Nae)
+  - [ ] Autenticacion/autorizacion de masters
+  - [ ] Validacion fuerte por coleccion y flujo de edicion mas guiado
+
+**Estado real tras esta iteracion**
+
+- La API Express ya sirve datos reales desde las 8 BDs SQLite documentadas en `docs/modelo-datos.md`.
+- La lectura publica queda funcional para listados y detalle por coleccion, con filtros simples por columna existente (`origin`, `level`, `school`, etc.) y paginacion basica (`limit`, `offset`).
+- La busqueda global ya usa las tablas FTS5 existentes en cada BD y combina resultados ordenados por `bm25`.
+- Los assets estaticos quedan servidos desde `/assets`, con carpeta `packages/api/assets/images/` preparada para uploads.
+- La administracion queda en estado de esqueleto funcional: permite crear/actualizar/eliminar contenido `nae`, pero sin autenticacion, sin validaciones profundas por tipo de coleccion y sin flujo de formularios web.
+
+**Subpartes completadas de FASE 2**
+
+- [x] Resolver acceso real a `packages/api/db/*.db` desde la API compilada
+- [x] Normalizar lectura de filas SQLite y parsear campos JSON serializados (`tags`, `size`, `components`, etc.)
+- [x] Implementar listados por coleccion con filtros directos sobre columnas reales del esquema
+- [x] Implementar detalle por `id` para las 8 colecciones
+- [x] Implementar `GET /search` cruzando `*_fts` en todas las bases
+- [x] Servir `/assets/*`
+- [x] Permitir importacion Markdown + frontmatter para contenido `nae`
+- [x] Restringir `PUT` y `DELETE` a contenido `origin="nae"`
+
+**Subpartes incompletas o pendientes dentro de FASE 2**
+
+- [ ] Validacion semantica por coleccion en admin (por ejemplo, exigir `level` en `spells`, `rule_category` en `rules`, etc.)
+- [ ] Sanitizacion/transformacion de Markdown a HTML para consumo directo del frontend
+- [ ] Soporte mas rico de filtros publicos (rangos, `LIKE`, tags JSON, ordenacion configurable)
+- [ ] Endpoints admin pensados para uso de frontend con mejor DX y errores mas detallados
+- [ ] Autenticacion minima para diferenciar masters de jugadores
+- [ ] Tests automatizados de API
+
+**Registro breve del proceso seguido en esta iteracion**
+
+1. Se reviso `planificacion-del-proyecto.md`, `docs/modelo-datos.md`, el importador `packages/api/scripts/import-foundry.ts` y el estado actual de `packages/api/`.
+2. Se inspeccionaron las tablas reales de SQLite para confirmar columnas disponibles en cada coleccion y evitar asumir un esquema distinto al realmente importado.
+3. Se implemento una capa comun de acceso a datos para lectura por coleccion, detalle, serializacion de campos JSON y busqueda FTS5.
+4. Se conectaron los routers de Express a consultas reales contra SQLite y se corrigio la resolucion de rutas a `db/` y `assets/` para ejecucion compilada.
+5. Se avanzo el area admin con importacion Markdown/frontmatter y operaciones `PUT`/`DELETE` restringidas a contenido `nae`.
+6. Se verifico compilacion TypeScript y una pasada end-to-end local de endpoints clave (`/health`, lectura publica, detalle, `/search`, `POST /admin/import-md`, `PUT`, `DELETE`).
 
 ### FASE 3 — Frontend
 

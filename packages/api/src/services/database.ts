@@ -1,8 +1,10 @@
 import Database from "better-sqlite3";
 import path from "path";
+import { getDbRoot } from "./paths";
 
 export const COLLECTIONS = [
   "species",
+  "traits",
   "classes",
   "spells",
   "equipment",
@@ -17,7 +19,7 @@ export type CollectionName = (typeof COLLECTIONS)[number];
 const dbCache = new Map<CollectionName, Database.Database>();
 
 export function getDbPath(collection: CollectionName) {
-  return path.resolve(__dirname, `../../db/${collection}.db`);
+  return path.join(getDbRoot(), `${collection}.db`);
 }
 
 export function openDb(collection: CollectionName) {

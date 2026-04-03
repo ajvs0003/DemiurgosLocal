@@ -10,5 +10,6 @@
     "opencode-claude-auth",
     "@tarquinen/opencode-dcp@latest",
     "@mohak34/opencode-notifier@latest",
+    "@ramtinj95/opencode-tokenscope",
   ],
 }

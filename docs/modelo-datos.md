@@ -18,7 +18,8 @@
 
 ```
 packages/api/db/
-├── species.db          # Razas/especies (DnD + Nae)
+├── species.db          # Razas/especies (solo especies reales, sin rasgos importados)
+├── traits.db           # Rasgos de especie importados desde Foundry
 ├── classes.db          # Clases, subclases
 ├── spells.db           # Hechizos
 ├── equipment.db        # Armas, armaduras, herramientas, consumibles
@@ -56,6 +57,8 @@ updated_at    TEXT DEFAULT (datetime('now'))
 
 ## 4. species.db — Razas / Especies
 
+`species.db` ya no mezcla los YAML de `origins24/species/traits/**`. Solo contiene las especies reales ubicadas en `origins24/species/*.yml`.
+
 ```sql
 CREATE TABLE IF NOT EXISTS species (
   -- Comunes
@@ -86,7 +89,7 @@ CREATE TABLE IF NOT EXISTS species (
   blindsight    INTEGER,
   tremorsense   INTEGER,
   truesight     INTEGER,
-  traits        TEXT           -- JSON array de nombres de rasgos: '["Resourceful","Skillful","Versatile"]'
+  traits        TEXT           -- JSON array de nombres/referencias de rasgos de la especie: '["Resourceful","Skillful","Versatile"]'
 );
 
 -- Full-Text Search
@@ -123,7 +126,52 @@ END;
 
 ---
 
-## 5. classes.db — Clases
+## 5. traits.db — Rasgos de especie
+
+Estos registros se importan desde `external/foundry-dnd5e/packs/_source/origins24/species/traits/**/*.yml` y se exponen por `GET /traits` y `GET /traits/:id` usando el mismo router dinamico que el resto de colecciones.
+
+```sql
+CREATE TABLE IF NOT EXISTS traits (
+  -- Comunes
+  id            TEXT PRIMARY KEY,
+  foundry_id    TEXT,
+  name          TEXT NOT NULL,
+  origin        TEXT NOT NULL DEFAULT 'dnd',
+  source        TEXT,
+  license       TEXT,
+  rules_edition TEXT,
+  tags          TEXT,
+  summary       TEXT,
+  body          TEXT,
+  body_format   TEXT DEFAULT 'html',
+  image         TEXT,
+  created_at    TEXT DEFAULT (datetime('now')),
+  updated_at    TEXT DEFAULT (datetime('now')),
+
+  -- Especificos de trait
+  trait_type    TEXT,    -- Foundry system.type.value, normalmente "race"
+  species       TEXT,    -- slug derivado de la carpeta traits/<species>/...
+  requirement   TEXT,    -- texto libre de requisito, ej. "Halfling"
+  repeatable    INTEGER DEFAULT 0
+);
+
+-- FTS
+CREATE VIRTUAL TABLE IF NOT EXISTS traits_fts USING fts5(
+  id, name, tags, summary, body, trait_type, species,
+  content=traits, content_rowid=rowid
+);
+```
+
+**Ejemplo de fila:**
+
+| id | name | species | requirement | trait_type |
+|---|---|---|---|---|
+| luck | Luck | halfling | Halfling | race |
+| breath-weapon | Breath Weapon | dragonborn | Dragonborn | race |
+
+---
+
+## 6. classes.db — Clases
 
 ```sql
 CREATE TABLE IF NOT EXISTS classes (
@@ -165,7 +213,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS classes_fts USING fts5(
 
 ---
 
-## 6. spells.db — Hechizos
+## 7. spells.db — Hechizos
 
 ```sql
 CREATE TABLE IF NOT EXISTS spells (
@@ -209,7 +257,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS spells_fts USING fts5(
 
 ---
 
-## 7. equipment.db — Equipo
+## 8. equipment.db — Equipo
 
 ```sql
 CREATE TABLE IF NOT EXISTS equipment (
@@ -255,7 +303,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS equipment_fts USING fts5(
 
 ---
 
-## 8. feats.db — Dotes
+## 9. feats.db — Dotes
 
 ```sql
 CREATE TABLE IF NOT EXISTS feats (
@@ -290,7 +338,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS feats_fts USING fts5(
 
 ---
 
-## 9. backgrounds.db — Trasfondos
+## 10. backgrounds.db — Trasfondos
 
 ```sql
 CREATE TABLE IF NOT EXISTS backgrounds (
@@ -327,7 +375,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS backgrounds_fts USING fts5(
 
 ---
 
-## 10. monsters.db — Monstruos / NPCs
+## 11. monsters.db — Monstruos / NPCs
 
 ```sql
 CREATE TABLE IF NOT EXISTS monsters (
@@ -377,7 +425,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS monsters_fts USING fts5(
 
 ---
 
-## 11. rules.db — Reglas generales
+## 12. rules.db — Reglas generales
 
 ```sql
 CREATE TABLE IF NOT EXISTS rules (
@@ -411,7 +459,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS rules_fts USING fts5(
 
 ---
 
-## 12. Consultas utiles de referencia
+## 13. Consultas utiles de referencia
 
 ### Listar todas las especies DnD oficiales
 ```sql
@@ -454,7 +502,7 @@ ORDER BY name;
 
 ---
 
-## 13. TypeScript interfaces (para la API)
+## 14. TypeScript interfaces (para la API)
 
 Estas interfaces representan los objetos que la API devuelve al frontend:
 

@@ -48,6 +48,26 @@ function listYmlFilesRecursive(dir: string): string[] {
   return results;
 }
 
+function listYmlFiles(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".yml") && entry.name !== "_folder.yml")
+    .map((entry) => path.join(dir, entry.name));
+}
+
+function resetDb(name: string): void {
+  const dbPath = path.join(DB_ROOT, name);
+  const walPath = `${dbPath}-wal`;
+  const shmPath = `${dbPath}-shm`;
+
+  for (const filePath of [dbPath, walPath, shmPath]) {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  }
+}
+
 function openDb(name: string): Database.Database {
   if (!fs.existsSync(DB_ROOT)) fs.mkdirSync(DB_ROOT, { recursive: true });
   const db = new Database(path.join(DB_ROOT, name));
@@ -296,9 +316,10 @@ function upsert_species(db: Database.Database, row: SpeciesRow): void {
 }
 
 function importSpecies(): void {
+  resetDb("species.db");
   const db = openDb("species.db");
   ensureSchema_species(db);
-  const files = listYmlFilesRecursive(path.join(FOUNDRY_SRC, "origins24", "species"));
+  const files = listYmlFiles(path.join(FOUNDRY_SRC, "origins24", "species"));
   let imported = 0;
   for (const file of files) {
     try {
@@ -313,6 +334,171 @@ function importSpecies(): void {
   const count = db.prepare("SELECT COUNT(*) as total FROM species").get() as { total: number };
   db.close();
   console.log(`[import:species] ${imported} imported, ${count.total} rows in DB`);
+}
+
+// ===========================================================================
+// TRAITS
+// ===========================================================================
+
+type TraitRow = {
+  id: string;
+  foundry_id: string | null;
+  name: string;
+  origin: "dnd";
+  source: string;
+  license: string | null;
+  rules_edition: string | null;
+  tags: string;
+  summary: string;
+  body: string;
+  body_format: "html";
+  image: string | null;
+  trait_type: string | null;
+  species: string | null;
+  requirement: string | null;
+  repeatable: number;
+};
+
+function ensureSchema_traits(db: Database.Database): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS traits (
+      id TEXT PRIMARY KEY,
+      foundry_id TEXT,
+      name TEXT NOT NULL,
+      origin TEXT NOT NULL DEFAULT 'dnd',
+      source TEXT,
+      license TEXT,
+      rules_edition TEXT,
+      tags TEXT,
+      summary TEXT,
+      body TEXT,
+      body_format TEXT DEFAULT 'html',
+      image TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      trait_type TEXT,
+      species TEXT,
+      requirement TEXT,
+      repeatable INTEGER DEFAULT 0
+    );
+
+    CREATE VIRTUAL TABLE IF NOT EXISTS traits_fts USING fts5(
+      id, name, tags, summary, body, trait_type, species,
+      content='traits', content_rowid='rowid'
+    );
+
+    CREATE TRIGGER IF NOT EXISTS traits_ai AFTER INSERT ON traits BEGIN
+      INSERT INTO traits_fts(rowid, id, name, tags, summary, body, trait_type, species)
+      VALUES (new.rowid, new.id, new.name, new.tags, new.summary, new.body, new.trait_type, new.species);
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS traits_ad AFTER DELETE ON traits BEGIN
+      INSERT INTO traits_fts(traits_fts, rowid, id, name, tags, summary, body, trait_type, species)
+      VALUES ('delete', old.rowid, old.id, old.name, old.tags, old.summary, old.body, old.trait_type, old.species);
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS traits_au AFTER UPDATE ON traits BEGIN
+      INSERT INTO traits_fts(traits_fts, rowid, id, name, tags, summary, body, trait_type, species)
+      VALUES ('delete', old.rowid, old.id, old.name, old.tags, old.summary, old.body, old.trait_type, old.species);
+      INSERT INTO traits_fts(rowid, id, name, tags, summary, body, trait_type, species)
+      VALUES (new.rowid, new.id, new.name, new.tags, new.summary, new.body, new.trait_type, new.species);
+    END;
+  `);
+}
+
+function deriveTraitSpecies(filePath: string): string | null {
+  const normalizedPath = filePath.replace(/\\/g, "/");
+  const match = normalizedPath.match(/origins24\/species\/traits\/([^/]+)\//);
+  return match ? match[1] : null;
+}
+
+function map_trait(raw: Record<string, unknown>, filePath: string): TraitRow {
+  const sys = raw?.system as Record<string, unknown> | undefined;
+  const body = (sys?.description as Record<string, unknown> | undefined)?.value as string ?? "";
+  const rulesEdition = (sys?.source as Record<string, unknown> | undefined)?.rules as string | undefined;
+  const typeObj = sys?.type as Record<string, unknown> | undefined;
+  const prereqs = sys?.prerequisites as Record<string, unknown> | undefined;
+  const species = deriveTraitSpecies(filePath);
+  const traitType = typeObj?.subtype as string | undefined ?? typeObj?.value as string | undefined ?? null;
+  const requirement = sys?.requirements as string | null | undefined ?? null;
+  const repeatable = prereqs?.repeatable ? 1 : 0;
+
+  const tags: string[] = [];
+  if (rulesEdition) tags.push(rulesEdition);
+  if (species) tags.push(species);
+  if (traitType) tags.push(traitType);
+
+  return {
+    id: (sys?.identifier as string | undefined) ?? slugify(String(raw?.name ?? "unknown")),
+    foundry_id: (raw?._id as string | null | undefined) ?? null,
+    name: String(raw?.name ?? "Unknown"),
+    origin: "dnd",
+    source: rulesEdition === "2024" ? "SRD 5.2" : "SRD 5.1",
+    license: ((sys?.source as Record<string, unknown> | undefined)?.license as string | null | undefined) ?? null,
+    rules_edition: rulesEdition ?? null,
+    tags: JSON.stringify(tags),
+    summary: makeSummary(body),
+    body,
+    body_format: "html",
+    image: (raw?.img as string | null | undefined) ?? null,
+    trait_type: traitType,
+    species,
+    requirement,
+    repeatable,
+  };
+}
+
+function upsert_trait(db: Database.Database, row: TraitRow): void {
+  db.prepare(`
+    INSERT INTO traits (
+      id, foundry_id, name, origin, source, license, rules_edition,
+      tags, summary, body, body_format, image,
+      trait_type, species, requirement, repeatable, updated_at
+    ) VALUES (
+      @id, @foundry_id, @name, @origin, @source, @license, @rules_edition,
+      @tags, @summary, @body, @body_format, @image,
+      @trait_type, @species, @requirement, @repeatable, datetime('now')
+    )
+    ON CONFLICT(id) DO UPDATE SET
+      foundry_id = excluded.foundry_id,
+      name = excluded.name,
+      origin = excluded.origin,
+      source = excluded.source,
+      license = excluded.license,
+      rules_edition = excluded.rules_edition,
+      tags = excluded.tags,
+      summary = excluded.summary,
+      body = excluded.body,
+      body_format = excluded.body_format,
+      image = excluded.image,
+      trait_type = excluded.trait_type,
+      species = excluded.species,
+      requirement = excluded.requirement,
+      repeatable = excluded.repeatable,
+      updated_at = datetime('now');
+  `).run(row);
+}
+
+function importTraits(): void {
+  resetDb("traits.db");
+  const db = openDb("traits.db");
+  ensureSchema_traits(db);
+  const files = listYmlFilesRecursive(path.join(FOUNDRY_SRC, "origins24", "species", "traits"));
+  let imported = 0;
+  for (const file of files) {
+    try {
+      const raw = yaml.load(fs.readFileSync(file, "utf8")) as Record<string, unknown>;
+      if (raw?.type !== "feat") continue;
+      const row = map_trait(raw, file);
+      upsert_trait(db, row);
+      imported += 1;
+    } catch (err) {
+      console.error(`[import:traits] ERROR in ${file}: ${(err as Error).message}`);
+    }
+  }
+  const count = db.prepare("SELECT COUNT(*) as total FROM traits").get() as { total: number };
+  db.close();
+  console.log(`[import:traits] ${imported} imported, ${count.total} rows in DB`);
 }
 
 // ===========================================================================
@@ -1915,6 +2101,7 @@ function main(): void {
   console.log("");
 
   importSpecies();
+  importTraits();
   importClasses();
   importSpells();
   importEquipment();
