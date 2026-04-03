@@ -8,6 +8,7 @@ build/
 coverage/
 out/
 storybook-static/
+.sisyphus/
 
 # Runtime / environment
 .env

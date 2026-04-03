@@ -1,6 +1,6 @@
 ---
 mode: primary
-model: anthropic/claude-opus-4-6
+model: github-copilot/gpt-5.1
 tools:
   write: false
   edit: false

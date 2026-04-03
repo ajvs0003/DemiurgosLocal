@@ -1,6 +1,6 @@
 # Planificacion del Proyecto - Nae (DnD 5e 2024)
 
-> Documento maestro de planificacion. Ultima actualizacion: 2026-04-02
+> Documento maestro de planificacion. Ultima actualizacion: 2026-04-03
 
 ## 1. Vision general
 
@@ -189,21 +189,33 @@ Esto permite:
 
 ## 6. Fases de desarrollo
 
-### FASE 1 — Informacion basica DnD (ACTUAL)
+### FASE 1 — Informacion basica DnD (COMPLETADA ✅)
 
 > Objetivo: tener las BDs SQLite pobladas con reglas oficiales, listas para servir.
 
-- [ ] Clonar repo `foundryvtt/dnd5e` en `external/foundry-dnd5e/`
-- [ ] Analizar estructura YML de cada pack (species, classes, spells, equipment, feats, backgrounds, monsters, rules)
-- [ ] Definir esquemas SQL para cada coleccion (ver `docs/modelo-datos.md`)
-- [ ] Definir mapeo YML Foundry -> SQL para cada tipo (ver `docs/importacion-foundry.md`)
-- [ ] Crear script importador (`packages/api/scripts/import-foundry.ts`)
-- [ ] Ejecutar importacion y verificar resultados
-- [ ] Verificar que FTS5 funciona correctamente
+- [x] Clonar repo `foundryvtt/dnd5e` en `external/foundry-dnd5e/`
+- [x] Analizar estructura YML de cada pack (species, classes, spells, equipment, feats, backgrounds, monsters, rules)
+- [x] Definir esquemas SQL para cada coleccion (ver `docs/modelo-datos.md`)
+- [x] Definir mapeo YML Foundry -> SQL para cada tipo (ver `docs/importacion-foundry.md`)
+- [x] Crear script importador (`packages/api/scripts/import-foundry.ts`)
+- [x] Ejecutar importacion y verificar resultados
+- [x] Verificar que FTS5 funciona correctamente
 
-**Resultado**: directorio `packages/api/db/` con 8 ficheros `.db` poblados con contenido DnD origin="dnd".
+**Resultado obtenido**: directorio `packages/api/db/` con 8 ficheros `.db` poblados con contenido DnD origin="dnd".
 
-### FASE 2 — Base de la API
+| BD | Registros | Tamaño |
+|---|---|---|
+| species.db | 50 | 172 KB |
+| classes.db | 12 | 108 KB |
+| spells.db | 340 | 836 KB |
+| equipment.db | 334 | 844 KB |
+| feats.db | 17 | 76 KB |
+| backgrounds.db | 4 | 44 KB |
+| monsters.db | 380 | 264 KB |
+| rules.db | 817 | 1,576 KB |
+| **Total** | **1,982 registros** | **~3.9 MB** |
+
+### FASE 2 — Base de la API (ACTUAL)
 
 > Objetivo: API funcional que consulta SQLite y sirve datos al frontend.
 

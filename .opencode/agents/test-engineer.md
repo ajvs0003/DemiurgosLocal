@@ -1,6 +1,6 @@
 ---
 mode: subagent
-model: github-copilot/claude-opus-4.6
+model: github-copilot/gpt-4.1
 description: Specializes in testing and quality assurance.
 tools:
   write: true
@@ -59,6 +59,7 @@ You are a QA engineer and testing specialist focused on writing comprehensive te
    - Architectural decisions that affect refactoring approach
 
 Your output should include:
+
 - The refactored code
 - A concise summary of changes made, both at a high and low level (1-2 sentences per refactored feature)
 - Explanation of how each change improves the code

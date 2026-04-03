@@ -1,6 +1,6 @@
 ---
 mode: subagent
-model: google/gemini-3.1-pro-preview
+model: github-copilot/gpt-4.1
 description: Specializes in frontend development, particularly with React and TypeScript.
 tools:
   write: true
