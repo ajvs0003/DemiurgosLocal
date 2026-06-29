@@ -100,11 +100,21 @@ run_script typecheck || fail "typecheck falló"
 ok "typecheck OK"
 
 echo "── tests (vitest) ──"
+TEST_OUTPUT=""
+TEST_STATUS=0
 case "$PM" in
-  pnpm) pnpm test -- --run || fail "tests fallaron" ;;
-  yarn) yarn test --run || fail "tests fallaron" ;;
-  npm)  npm test -- --run || fail "tests fallaron" ;;
+  pnpm) TEST_OUTPUT=$(pnpm test -- --run 2>&1) || TEST_STATUS=$? ;;
+  yarn) TEST_OUTPUT=$(yarn test --run 2>&1) || TEST_STATUS=$? ;;
+  npm)  TEST_OUTPUT=$(npm test -- --run 2>&1) || TEST_STATUS=$? ;;
 esac
+printf "%s\n" "$TEST_OUTPUT"
+if [[ $TEST_STATUS -ne 0 ]]; then
+  if grep -q "No test files found" <<< "$TEST_OUTPUT"; then
+    warn "No hay tests todavía; se permite durante bootstrap"
+  else
+    fail "tests fallaron"
+  fi
+fi
 ok "tests OK"
 
 echo "── build (next) ──"
