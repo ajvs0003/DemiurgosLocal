@@ -10,3 +10,9 @@
 > - Review: progress/review_<feature>.md (approved tras N iteraciones)
 > - Notas: ...
 > ```
+
+## 2026-06-29 · feature: app_bootstrap_root
+- Spec: `specs/app_bootstrap_root/`
+- Implementación: `progress/impl_app_bootstrap_root.md`
+- Review: `progress/review_app_bootstrap_root.md` (approved tras iteraciones de spec+review)
+- Notas: feature cerrada como `done` tras reaprobación de spec y review final approved.

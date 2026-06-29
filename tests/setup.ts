@@ -2,6 +2,10 @@ import "@testing-library/jest-dom/vitest";
 import { afterEach, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 
+if (typeof window === "undefined") {
+  throw new Error("tests/setup.ts requires jsdom environment");
+}
+
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();

@@ -37,12 +37,12 @@ Si te piden implementar directamente, **te niegas educadamente** y arrancas el f
 pending ──architect──► spec_ready ──[APROBACIÓN HUMANA]──► in_progress ──implementer──► review ──reviewer──► done
 ```
 
-| Fase | Agente | Output |
-|---|---|---|
-| 1. Spec | `architect` (subagent) | `specs/<feature>/{requirements.md, design.md, tasks.md}` |
-| 2. **Puerta humana** | — | El leader para y pide aprobación |
-| 3. Implementación | `frontend-specialist` y/o `test-engineer` (subagents) | Código + `progress/impl_<feature>.md` |
-| 4. Review | `code-reviewer` (subagent) | `progress/review_<feature>.md` |
+| Fase                 | Agente                                                | Output                                                   |
+| -------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
+| 1. Spec              | `architect` (subagent)                                | `specs/<feature>/{requirements.md, design.md, tasks.md}` |
+| 2. **Puerta humana** | —                                                     | El leader para y pide aprobación                         |
+| 3. Implementación    | `frontend-specialist` y/o `test-engineer` (subagents) | Código + `progress/impl_<feature>.md`                    |
+| 4. Review            | `code-reviewer` (subagent)                            | `progress/review_<feature>.md`                           |
 
 **El leader nunca edita código. El architect nunca codifica. El implementer nunca se autoaprueba. El reviewer nunca edita.**
 
@@ -60,16 +60,16 @@ pending ──architect──► spec_ready ──[APROBACIÓN HUMANA]──► 
 
 ## Estado en disco (anti teléfono-descompuesto)
 
-| Archivo | Quién escribe | Contiene |
-|---|---|---|
-| `feature_list.json` | leader / implementer | `pending → spec_ready → in_progress → done` |
-| `specs/<feature>/requirements.md` | architect | Requirements EARS `R1`, `R2`, ... |
-| `specs/<feature>/design.md` | architect | Decisiones técnicas + alternativa descartada |
-| `specs/<feature>/tasks.md` | architect | Checklist; implementer marca `[x]` |
-| `progress/current.md` | leader | Plan vivo de la sesión |
-| `progress/impl_<feature>.md` | implementer | Archivos tocados + mapa `R<n> → test` + output tests |
-| `progress/review_<feature>.md` | reviewer | Checklist contra docs y specs |
-| `progress/history.md` | leader | Bitácora append-only |
+| Archivo                           | Quién escribe        | Contiene                                             |
+| --------------------------------- | -------------------- | ---------------------------------------------------- |
+| `feature_list.json`               | leader / implementer | `pending → spec_ready → in_progress → done`          |
+| `specs/<feature>/requirements.md` | architect            | Requirements EARS `R1`, `R2`, ...                    |
+| `specs/<feature>/design.md`       | architect            | Decisiones técnicas + alternativa descartada         |
+| `specs/<feature>/tasks.md`        | architect            | Checklist; implementer marca `[x]`                   |
+| `progress/current.md`             | leader               | Plan vivo de la sesión                               |
+| `progress/impl_<feature>.md`      | implementer          | Archivos tocados + mapa `R<n> → test` + output tests |
+| `progress/review_<feature>.md`    | reviewer             | Checklist contra docs y specs                        |
+| `progress/history.md`             | leader               | Bitácora append-only                                 |
 
 Los subagentes **escriben en archivos y devuelven solo una referencia ligera** (`done -> progress/impl_<feature>.md`). Por chat no pasa código.
 
@@ -100,12 +100,12 @@ opencode                 # arranca opencode; AGENTS.md fuerza modo orchestrator
 
 ## Agentes disponibles en `.opencode/agent/`
 
-| Archivo | Modo | Rol |
-|---|---|---|
-| `orchestrator.md` | primary | **Leader** SDD (delega, no edita) |
-| `architect.md` | subagent | **Spec author** (escribe specs, no codifica) |
-| `frontend-specialist.md` | subagent | **Implementer** Next.js/React/TS/Tailwind |
-| `test-engineer.md` | subagent | **Implementer** Vitest/RTL/Playwright |
-| `code-reviewer.md` | subagent | **Reviewer** (no edita) |
-| `plan.md` | primary | Planning libre fuera del ciclo SDD |
-| `build.md` | primary | Build/CI utility (Next, Vercel, Turbopack) |
+| Archivo                  | Modo     | Rol                                          |
+| ------------------------ | -------- | -------------------------------------------- |
+| `orchestrator.md`        | primary  | **Leader** SDD (delega, no edita)            |
+| `architect.md`           | subagent | **Spec author** (escribe specs, no codifica) |
+| `frontend-specialist.md` | subagent | **Implementer** Next.js/React/TS/Tailwind    |
+| `test-engineer.md`       | subagent | **Implementer** Vitest/RTL/Playwright        |
+| `code-reviewer.md`       | subagent | **Reviewer** (no edita)                      |
+| `plan.md`                | primary  | Planning libre fuera del ciclo SDD           |
+| `build.md`               | primary  | Build/CI utility (Next, Vercel, Turbopack)   |

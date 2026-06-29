@@ -32,6 +32,7 @@ pnpm test:e2e --ui    # con UI mode
 ## Qué se testea y cómo
 
 ### Componentes React (Vitest + RTL)
+
 ```tsx
 // src/components/UserCard/UserCard.test.tsx
 import { render, screen } from "@testing-library/react";
@@ -53,11 +54,13 @@ test("R2: invokes onSelect when clicked", async () => {
 ```
 
 Reglas:
+
 - Queries por **rol** y por **texto accesible** preferentemente. `getByTestId` solo como último recurso.
 - `userEvent` > `fireEvent` (simula interacción real).
 - `await` siempre con `userEvent` y con `findBy*`.
 
 ### Hooks
+
 ```ts
 import { renderHook, act } from "@testing-library/react";
 import { useToggle } from "./useToggle";
@@ -71,6 +74,7 @@ test("R1: toggles state", () => {
 ```
 
 ### Server Actions
+
 - Test directamente la función (es server-only, sin DOM):
   ```ts
   import { createNote } from "@/server/actions/create-note";
@@ -85,6 +89,7 @@ test("R1: toggles state", () => {
 - Mock de capa de datos (`db`, `prisma`, etc.) con `vi.mock`.
 
 ### Route Handlers (`app/api/.../route.ts`)
+
 ```ts
 import { GET } from "@/app/api/notes/route";
 
@@ -97,6 +102,7 @@ test("R1: returns list of notes", async () => {
 ```
 
 ### Mockear módulos de Next
+
 ```ts
 import { vi } from "vitest";
 
@@ -108,13 +114,14 @@ vi.mock("next/navigation", () => ({
 ```
 
 ### MSW para fetches
+
 ```ts
 // tests/setup.ts
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 
 export const server = setupServer(
-  http.get("https://api/users", () => HttpResponse.json({ users: [] }))
+  http.get("https://api/users", () => HttpResponse.json({ users: [] })),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
@@ -123,6 +130,7 @@ afterAll(() => server.close());
 ```
 
 ### E2E (Playwright)
+
 - Solo flujos críticos del producto. No exhaustivo.
 - Cada test arranca con DB/seed conocidos o stub. Sin dependencias entre tests.
 - Page Object Model **opcional** — solo si la suite crece y hay duplicación clara.
@@ -144,6 +152,7 @@ test("R1: user can log in and reach dashboard", async ({ page }) => {
 ## Trazabilidad `R<n> → test`
 
 Regla dura:
+
 - Cada `R<n>` en `requirements.md` aparece en al menos un test cuya descripción menciona `R<n>` o cuya cobertura el implementer documenta en `progress/impl_<feature>.md`.
 - El test debe **fallar si el comportamiento se rompe**. Mental check del implementer: "si borro la línea X, ¿este test falla?".
 - El reviewer corre los tests con sus propios ojos y verifica la tabla `R<n> → test`.

@@ -21,26 +21,31 @@ Este documento define **exactamente** cómo se escribe una spec en este repo. Es
 Cada requirement se numera (`R1`, `R2`, ...) y usa una de las cinco formas:
 
 ### Ubiquitous (siempre aplica)
+
 ```
 R1. El sistema DEBE persistir las notas en formato JSON atómico.
 ```
 
 ### Event-driven (responde a un trigger)
+
 ```
 R2. CUANDO el usuario ejecuta `cli add`, el sistema DEBE crear una nota con id único e ISO timestamp.
 ```
 
 ### State-driven (mientras un estado se mantiene)
+
 ```
 R3. MIENTRAS el archivo de notas esté bloqueado, el sistema DEBE reintentar hasta 3 veces con backoff de 100ms.
 ```
 
 ### Optional feature (condicional a un toggle)
+
 ```
 R4. SI la flag `--verbose` está activa, ENTONCES el sistema DEBE imprimir el path absoluto del archivo de notas.
 ```
 
 ### Unwanted behavior (qué hacer ante condiciones indeseadas)
+
 ```
 R5. SI el archivo de notas está corrupto, ENTONCES el sistema DEBE abortar con código de salida 2 y mensaje "corrupt store at <path>".
 ```
@@ -61,21 +66,26 @@ Plantilla mínima:
 # Design: <feature>
 
 ## Contexto
+
 <En qué parte del sistema encaja. Qué módulos toca. Por qué ahora.>
 
 ## Decisión
+
 <La decisión técnica concreta. Diagramas si ayudan. Pseudocódigo si aclara.>
 
 ## Alternativa descartada
+
 <Una alternativa REAL que consideraste. Por qué no la elegiste.>
 
 ## Impacto
+
 - Archivos nuevos:
 - Archivos modificados:
 - APIs públicas afectadas:
 - Breaking changes / migraciones:
 
 ## Riesgos
+
 - <riesgo 1>: <mitigación>
 - <riesgo 2>: <mitigación>
 ```

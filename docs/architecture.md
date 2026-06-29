@@ -5,24 +5,31 @@ Stack: **Next.js 15 (App Router) + React 19 + TypeScript strict + Tailwind 4**.
 ## Principios SDD
 
 ### 1. El repositorio es el sistema
+
 Conocimiento en archivos versionados (`AGENTS.md`, `docs/`, `specs/`, `progress/`). Cualquier agente o humano entra en frío, lee y aporta.
 
 ### 2. Estado en disco
+
 Decisiones, planes, reviews y progresos en archivos. El chat es transporte.
 
 ### 3. Una feature en vuelo a la vez
+
 Solo una `in_progress` en `feature_list.json`. `init.sh` lo valida.
 
 ### 4. Spec antes que código
+
 Sin `requirements.md` + `design.md` + `tasks.md` aprobados, no se toca código.
 
 ### 5. Trazabilidad obligatoria
+
 Cada `R<n>` → al menos un test que falla si el comportamiento se rompe.
 
 ### 6. Separación de roles
+
 Leader orquesta · Architect especifica · Implementer ejecuta · Reviewer verifica. Cada uno en su carril.
 
 ### 7. Verificación ejecutable
+
 "Funciona" = `pnpm lint && pnpm typecheck && pnpm test --run && pnpm build` en verde.
 
 ---
@@ -86,12 +93,12 @@ Leader orquesta · Architect especifica · Implementer ejecuta · Reviewer verif
 
 ### Server vs Client
 
-| Ponlo en server | Ponlo en client |
-|---|---|
-| Fetch de datos, secrets, auth, DB | `useState`, `useEffect`, refs |
-| Renderizado estático/dinámico | Eventos (`onClick`, `onChange`) |
-| Lógica que no debe ir al bundle | Browser-only APIs (`window`, `localStorage`) |
-| | Animaciones reactivas, focus/scroll |
+| Ponlo en server                   | Ponlo en client                              |
+| --------------------------------- | -------------------------------------------- |
+| Fetch de datos, secrets, auth, DB | `useState`, `useEffect`, refs                |
+| Renderizado estático/dinámico     | Eventos (`onClick`, `onChange`)              |
+| Lógica que no debe ir al bundle   | Browser-only APIs (`window`, `localStorage`) |
+|                                   | Animaciones reactivas, focus/scroll          |
 
 Mueve la frontera lo más abajo posible en el árbol: layouts y pages como RSC, hojas hojas hojas como Client Components.
 
@@ -105,6 +112,7 @@ Mueve la frontera lo más abajo posible en el árbol: layouts y pages como RSC, 
 ## Personalización por proyecto
 
 Añade aquí las particularidades reales del repo:
+
 - Dominio (banca, e-commerce, dashboard interno…).
 - Restricciones (validación de IBAN, formato `Intl.NumberFormat('es-ES', { style: 'currency' })`, etc.).
 - Performance budgets, accesibilidad mínima (WCAG AA), Core Web Vitals objetivo.

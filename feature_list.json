@@ -1,12 +1,12 @@
 ﻿{
     "features":  [
-                     {
-                         "name":  "app_bootstrap_root",
-                         "description":  "Create the production Next.js app at the repository root with pnpm, strict TypeScript, Tailwind 4, Sass support, lint/format tooling, and a Vercel-ready baseline.",
-                         "priority":  "high",
-                         "sdd":  true,
-                         "status":  "pending"
-                     },
+                       {
+                           "name":  "app_bootstrap_root",
+                           "description":  "Create the production Next.js app at the repository root with pnpm, strict TypeScript, Tailwind 4, Sass support, lint/format tooling, and a Vercel-ready baseline.",
+                           "priority":  "high",
+                           "sdd":  true,
+                           "status":  "done"
+                       },
                      {
                          "name":  "visual_foundation_tokens",
                          "description":  "Migrate the prototype design language into reusable tokens, global styles, fonts, and UI primitives, including a simplified V1 image-slot replacement.",

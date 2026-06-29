@@ -39,6 +39,7 @@
 ## Next.js (App Router)
 
 ### Server Components vs Client Components
+
 - **Default = Server.** No añadas `"use client"` por costumbre.
 - `"use client"` solo cuando el componente necesita:
   - `useState`, `useReducer`, `useEffect`, `useRef`, `useLayoutEffect`.
@@ -48,6 +49,7 @@
 - **Empuja `"use client"` lo más abajo del árbol posible.**
 
 ### Layouts y páginas
+
 - `layout.tsx` Server por defecto, sin estado.
 - `page.tsx` Server por defecto; `async` permitido para fetch.
 - `loading.tsx` para Suspense fallback de la ruta.
@@ -55,18 +57,21 @@
 - `not-found.tsx` para 404 contextual.
 
 ### Data fetching
+
 ```tsx
 // RSC: fetch directo con cacheo nativo
 export default async function Page() {
-  const res = await fetch('https://api/...', { next: { revalidate: 60 } });
+  const res = await fetch("https://api/...", { next: { revalidate: 60 } });
   const data = await res.json();
   return <Foo data={data} />;
 }
 ```
+
 - Tags para revalidación selectiva: `next: { tags: ['users'] }` + `revalidateTag('users')`.
 - En Client Components que **necesiten** datos en cliente: hooks específicos. Para casos simples, pasa props desde RSC padre.
 
 ### Mutaciones
+
 - Preferir **Server Actions** sobre route handlers:
   ```ts
   // src/server/actions/create-note.ts
@@ -87,15 +92,18 @@ export default async function Page() {
 - Valida siempre input (Zod o equivalente). **Nunca confíes** en el cliente.
 
 ### Imágenes y assets
+
 - `<Image>` de `next/image` salvo justificación.
 - Define `width`/`height` o `fill` + `sizes`. Sin layout shift.
 - Fuentes vía `next/font` (`local` o `google`).
 
 ### Navegación
+
 - `<Link href="...">` para navegación interna. Sin `router.push` salvo programática justificada.
 - `useRouter` solo en Client Components.
 
 ### Metadata y SEO
+
 - `export const metadata: Metadata = {...}` en `layout.tsx` / `page.tsx`.
 - `generateMetadata()` async cuando el SEO depende de datos.
 
@@ -106,7 +114,7 @@ export default async function Page() {
 - **No componentes wrapper triviales** solo para variantes de clase. Usa **CVA** (`class-variance-authority`) o composición con `clsx`/`tailwind-merge`:
   ```tsx
   import { cn } from "@/lib/cn";
-  <button className={cn("rounded-md px-4 py-2", isPrimary && "bg-blue-600 text-white")} />
+  <button className={cn("rounded-md px-4 py-2", isPrimary && "bg-blue-600 text-white")} />;
   ```
 - **Sin clases dinámicas concatenadas** (`bg-${color}-500` → Tailwind no las detecta). Usa mapas explícitos:
   ```tsx
@@ -157,6 +165,7 @@ export default async function Page() {
 ## Build / CI
 
 Scripts canónicos en `package.json`:
+
 - `dev` — `next dev --turbo`
 - `build` — `next build`
 - `start` — `next start`
