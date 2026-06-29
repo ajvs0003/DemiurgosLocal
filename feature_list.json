@@ -1,0 +1,11 @@
+{
+  "features": [
+    {
+      "name": "notes_list_and_create",
+      "description": "Página /dashboard/notes que lista notas (RSC con fetch + revalidateTag) y permite crear notas vía Server Action con validación Zod. Estados loading/empty/error cubiertos. UI accesible y responsive con Tailwind.",
+      "priority": "high",
+      "sdd": true,
+      "status": "pending"
+    }
+  ]
+}
