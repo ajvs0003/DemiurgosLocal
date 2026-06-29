@@ -1,6 +1,6 @@
 ---
 mode: subagent
-model: anthropic/claude-opus-4-6
+model: github-copilot/claude-haiku-4.5
 description: Spec author SDD. Convierte una feature pendiente en requirements (EARS) + design + tasks. No codifica.
 tools:
   write: true
@@ -48,6 +48,7 @@ Cada requirement va numerado `R1`, `R2`, ... y usa una de las cinco formas EARS:
 - **Unwanted behavior**: `R5. SI <condición indeseada>, ENTONCES el sistema DEBE <respuesta segura>.`
 
 Reglas:
+
 - Una idea por requirement. Si te sale una con dos verbos, pártela.
 - Cubre **happy path, edge cases y errores**. No solo el feliz.
 - No metas detalles de implementación en requirements (eso va en `design.md`).
@@ -96,6 +97,7 @@ Una lista de tasks **discretas**, en orden, que un implementer pueda seguir mec�
 ```
 
 Reglas:
+
 - Cada task referencia **qué R cubre** (mínimo una; si una task cubre varias, listas).
 - Toda `R<n>` aparece en al menos una task. El reviewer lo verifica.
 - Una task = un commit razonable. Si dura más de ~30 min de implementer, pártela.

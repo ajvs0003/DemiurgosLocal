@@ -1,6 +1,5 @@
 ---
 mode: primary
-model: anthropic/claude-haiku-4-5
 description: Build automation para Next.js (Turbopack, Vercel, GH Actions). Fuera del ciclo SDD. Para pipelines, bundle size, troubleshooting.
 tools:
   write: true

@@ -1,6 +1,6 @@
 ---
 mode: subagent
-model: github-copilot/gpt-4.1
+model: github-copilot/gpt-5.3-codex
 description: Implementer SDD especializado en tests. Vitest + RTL + Playwright + MSW sobre Next.js. Mapea R<n>→test. No se autoaprueba.
 tools:
   write: true
@@ -49,6 +49,7 @@ Eres el **Implementer de Tests** del arnés SDD. Stack: **Vitest + React Testing
 ## Patrones específicos Next.js
 
 ### Mock de `next/navigation`
+
 ```ts
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
@@ -60,7 +61,9 @@ vi.mock("next/navigation", () => ({
 ```
 
 ### Mock de `next/image`
+
 Solo si causa ruido. Por defecto deja que renderice como `<img>`:
+
 ```ts
 vi.mock("next/image", () => ({
   default: (props: any) => <img {...props} />,
@@ -68,6 +71,7 @@ vi.mock("next/image", () => ({
 ```
 
 ### Server Actions (test directo, sin DOM)
+
 ```ts
 import { createNote } from "@/server/actions/create-note";
 
@@ -83,6 +87,7 @@ test("R3: rechaza título vacío", async () => {
 ```
 
 ### Route handlers
+
 ```ts
 import { GET } from "@/app/api/notes/route";
 
@@ -93,11 +98,14 @@ test("R1: devuelve lista de notas", async () => {
 ```
 
 ### Server Components async
+
 Por ahora RTL no renderiza RSC async nativamente. Estrategias:
+
 - Test del **componente que recibe los datos** como props (factoriza datos → componente).
 - O test e2e con Playwright cuando la lógica vive en RSC.
 
 ### MSW para fetches
+
 Usa el setup global descrito en `docs/verification.md`. Por test, sobreescribe con `server.use(...)`.
 
 ## E2E con Playwright
@@ -145,7 +153,9 @@ test("R1: usuario puede crear una nota", async ({ page }) => {
 
 ## Output de los tests
 ```
+
 <output literal de `pnpm test --run` y `pnpm test:e2e` si aplica>
+
 ```
 
 ## Notas
