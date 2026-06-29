@@ -1,4 +1,4 @@
 {
   "window.title": "${dirty}${activeEditorShort}${separator}${rootName}${separator}${profileName}${separator}${appName}${separator}[Branch: claude-design]",
-  "conventionalCommits.scopes": ["settings"]
+  "conventionalCommits.scopes": ["settings", "arquitecture"]
 }
