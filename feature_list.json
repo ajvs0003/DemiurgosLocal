@@ -1,11 +1,95 @@
-{
-  "features": [
-    {
-      "name": "notes_list_and_create",
-      "description": "Página /dashboard/notes que lista notas (RSC con fetch + revalidateTag) y permite crear notas vía Server Action con validación Zod. Estados loading/empty/error cubiertos. UI accesible y responsive con Tailwind.",
-      "priority": "high",
-      "sdd": true,
-      "status": "pending"
-    }
-  ]
+﻿{
+    "features":  [
+                     {
+                         "name":  "app_bootstrap_root",
+                         "description":  "Create the production Next.js app at the repository root with pnpm, strict TypeScript, Tailwind 4, Sass support, lint/format tooling, and a Vercel-ready baseline.",
+                         "priority":  "high",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "visual_foundation_tokens",
+                         "description":  "Migrate the prototype design language into reusable tokens, global styles, fonts, and UI primitives, including a simplified V1 image-slot replacement.",
+                         "priority":  "high",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "application_shell_navigation",
+                         "description":  "Implement the persistent App Router shell with Header, Sidebar, site/nav config, route placeholders, and client hooks only where interaction requires them.",
+                         "priority":  "high",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "data_model_normalization",
+                         "description":  "Replace browser globals with typed domain contracts and TypeScript seed modules for spells, monsters, chronicles, timeline, characters, and places.",
+                         "priority":  "high",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "global_index_search",
+                         "description":  "Build the /index experience with typed cross-domain search, grouped results, and behavior comparable to the prototype SearchView.",
+                         "priority":  "high",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "bestiary_vertical_slice",
+                         "description":  "Migrate the bestiary into browseable list and detail routes with typed monster data, badges, and end-to-end usability.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "chronicles_and_scriptorium",
+                         "description":  "Implement the /scriptorium, /chronicles, and /chronicles/[id] routes using typed chronicle and timeline data with reusable chronology components.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "characters_catalog",
+                         "description":  "Port the characters domain into typed list and detail routes, including portrait strategy under public/portraits.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "places_catalog",
+                         "description":  "Port the places domain into typed list and detail routes and prepare atlas-facing location metadata.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "atlas_interactive_maps",
+                         "description":  "Migrate the atlas with responsive map assets, pin positioning, and place-linked interactions that stay visually stable across viewports.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "grimoire_codex_rules",
+                         "description":  "Complete the core knowledge sections with grimoire list/detail routes, codex collection routes, shared rendering primitives, and a rules page.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "sanctum_modal_routes",
+                         "description":  "Migrate Sanctum into parallel/intercepting routes with client-side tabbed forms, route-based modal behavior, and no real persistence in V1.",
+                         "priority":  "high",
+                         "sdd":  true,
+                         "status":  "pending"
+                     },
+                     {
+                         "name":  "sanctum_persistence",
+                         "description":  "Add deployment-compatible persistence for Sanctum create/read flows with validated server-side storage, schema design, and optional starter seeds.",
+                         "priority":  "medium",
+                         "sdd":  true,
+                         "status":  "pending"
+                     }
+                 ]
 }

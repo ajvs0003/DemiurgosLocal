@@ -66,7 +66,7 @@ if command -v jq >/dev/null 2>&1; then
 fi
 
 # 4. Directorios obligatorios
-for d in specs progress docs .opencode/agent src; do
+for d in specs progress docs .opencode/agents src; do
   [[ -d "$d" ]] || fail "Falta directorio: $d"
 done
 ok "Directorios obligatorios presentes"
@@ -101,7 +101,7 @@ ok "typecheck OK"
 
 echo "── tests (vitest) ──"
 case "$PM" in
-  pnpm) pnpm test --run || fail "tests fallaron" ;;
+  pnpm) pnpm test -- --run || fail "tests fallaron" ;;
   yarn) yarn test --run || fail "tests fallaron" ;;
   npm)  npm test -- --run || fail "tests fallaron" ;;
 esac
