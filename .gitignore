@@ -2,6 +2,12 @@
 node_modules/
 **/node_modules/
 
+# harness
+specs/
+progress/
+init.sh
+feature_list.json
+
 # Build output
 dist/
 build/
